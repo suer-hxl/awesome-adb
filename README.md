@@ -225,7 +225,7 @@ restarting adbd as root
 
 有些手机 root 后也无法通过 `adb root` 命令让 adbd 以 root 权限执行，比如三星的部分机型，会提示 `adbd cannot run as root in production builds`，此时可以先安装 adbd Insecure，然后 `adb root` 试试。
 
-相应地，如果要恢复 adbd 为非 root 权限的话，可以使用 `adb unroot` 命令。
+相应地，如果要恢复 adb 为非 root 权限的话，可以使用 `adb unroot` 命令。
 
 ### 指定 adb server 的网络端口
 
@@ -480,14 +480,16 @@ adb shell pm list packages [-f] [-d] [-e] [-s] [-3] [-i] [-u] [--user USER_ID] [
 | 参数       | 显示列表                   |
 |------------|----------------------------|
 | 无         | 所有应用                   |
-| -f         | 显示应用关联的 apk 文件    |
+| -f         | 显示应用关联的 apk 文件?实际测试并非如此    |
 | -d         | 只显示 disabled 的应用     |
 | -e         | 只显示 enabled 的应用      |
 | -s         | 只显示系统应用             |
 | -3         | 只显示第三方应用           |
-| -i         | 显示应用的 installer       |
-| -u         | 包含已卸载应用             |
+| -i         | 显示应用的 installer(来源)      |
+| -u         | 包含已卸载应用/输出包和未安装包信息（安装来源）            |
 | `<FILTER>` | 包名包含 `<FILTER>` 字符串 |
+|--user USER_ID|根据用户id查询用户的空间的所有包，USER_ID代表当前连接设备的顺序，从零开始|
+|"str"       |显示含有str的包             |
 
 #### 所有应用
 
@@ -544,7 +546,10 @@ adb shell pm list packages mazhuang
 ```sh
 adb shell pm list packages | grep mazhuang
 ```
-
+显示设备用户的包名(从0开始,第一个设备是0)
+```sh
+adb shell pm list packages --user 0
+```
 ### 安装 APK
 
 命令格式：
@@ -703,12 +708,15 @@ adb shell pm clear com.qihoo360.mobilesafe
 
 ### 查看前台 Activity
 
-命令：
+mac/linux命令：
 
 ```sh
 adb shell dumpsys activity activities | grep mResumedActivity
 ```
-
+windows命令
+```sh
+adb shell dumpsys activity activities | findstr mResumedActivity
+```
 输出示例：
 
 ```sh
@@ -1651,7 +1659,11 @@ adb shell getprop ro.build.version.release
 ```sh
 adb shell ifconfig | grep Mask
 ```
-
+或者
+```sh
+adb shell "ifconfig | grep Mask"
+```
+或者切换到shell执行ifconfig | grep Mask
 输出示例：
 
 ```sh
@@ -1691,7 +1703,7 @@ wlan0     Link encap:UNSPEC
 ```sh
 adb shell netcfg
 ```
-
+注:模拟器可能没用这个文件
 输出示例：
 
 ```sh
